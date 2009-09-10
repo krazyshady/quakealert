@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="magnitude_values">
+		<item>1</item>
+		<item>2.5</item>
+		<item>5</item>
+	</string-array>
+	<string-array name="magnitude_entries">
+		<item>M1.0+</item>
+		<item>M2.5+</item>
+		<item>M5.0+</item>
+	</string-array>
+	<string-array name="range_values">
+		<item>100</item>
+		<item>250</item>
+		<item>500</item>
+		<item>1000</item>
+		<item>-1</item>
+	</string-array>
+	<string-array name="range_entries">
+		<item>100km</item>
+		<item>250km</item>
+		<item>500km</item>
+		<item>1000km</item>
+		<item>No Range</item>
+	</string-array>
+	<string-array name="interval_values">
+		<item>60000</item>
+		<item>300000</item>
+		<item>900000</item>
+		<item>3600000</item>
+	</string-array>
+	<string-array name="interval_entries">
+		<item>1 minute</item>
+		<item>5 minutes</item>
+		<item>15 minutes</item>
+		<item>1 hour</item>
+	</string-array>
+</resources>
