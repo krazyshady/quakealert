@@ -1,6 +1,8 @@
 package org.jtb.quakealert;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -24,6 +26,8 @@ public class ListQuakesActivity extends Activity {
 	private static final int PREFS_MENU = 1;
 
 	private static final int PREFS_REQUEST = 0;
+
+	private AlertDialog mServiceWarnDialog;
 
 	private static ListQuakesActivity mThis;
 
@@ -65,9 +69,16 @@ public class ListQuakesActivity extends Activity {
 			Intent i = new Intent(this, QuakeService.class);
 			startService(i);
 		} else {
-			QuakeService.refresh(this); 
+			QuakeService.refresh(this);
 		}
 
+		WarnDialog.Builder builder = new WarnDialog.Builder(this,
+				"serviceWarn", R.string.service_warn);
+		if (builder.isWarn()) {
+			mServiceWarnDialog = builder.create();
+			mServiceWarnDialog.show();
+		}
+		
 		updateList();
 	}
 
@@ -118,7 +129,7 @@ public class ListQuakesActivity extends Activity {
 
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
@@ -128,5 +139,11 @@ public class ListQuakesActivity extends Activity {
 			}
 			break;
 		}
+	}
+
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		}
+		return null;
 	}
 }
