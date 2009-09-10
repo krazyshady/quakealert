@@ -48,12 +48,28 @@ public class QuakePrefs {
 		e.commit();
 	}	
 
+	private void setBoolean(String key, boolean val) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		Editor e = prefs.edit();
+		e.putBoolean(key, val);
+		e.commit();
+	}	
+
 	private boolean getBoolean(String key, boolean def) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		boolean b = prefs.getBoolean(key, def);
 		return b;
 	}	
+	
+	public boolean isWarn(String warnId) {
+		return getBoolean(warnId, true);
+	}
+	
+	public void setWarn(String warnId, boolean warn) {
+		setBoolean(warnId, warn);
+	}
 	
 	public long getInterval() {
 		return getLong("interval", 5 * 60 * 1000);
