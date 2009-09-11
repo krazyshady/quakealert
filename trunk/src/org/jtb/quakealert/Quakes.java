@@ -16,7 +16,7 @@ public class Quakes {
     private static final String QUAKES_URL = "http://earthquake.usgs.gov/eqcenter/catalogs/eqs1day-M1.txt";
     //private static final String QUAKES_URL = "http://192.168.0.100:8080/eqs1day-M1.txt";
     
-	private List<Quake> quakes = null;
+	private ArrayList<Quake> quakes = null;
 
     public synchronized void update() {
         BufferedReader reader = null;
@@ -57,7 +57,7 @@ public class Quakes {
         }
     }
 
-    public synchronized List<Quake> get() {
+    public synchronized ArrayList<Quake> get() {
         if (quakes == null) {
             update();
         }

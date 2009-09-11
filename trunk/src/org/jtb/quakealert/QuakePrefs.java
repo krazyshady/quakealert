@@ -1,7 +1,5 @@
 package org.jtb.quakealert;
 
-import java.util.Date;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -121,15 +119,6 @@ public class QuakePrefs {
 		return getFloat("magnitude", (float)2.5); 
 	}
 
-	public Date getLastAckDate() {
-		long time = getLong("lastAckTime", 0);
-		return new Date(time);
-	}
-	
-	public void setLastAckDate(Date d) {
-		setLong("lastAckTime", d.getTime());
-	}
-	
 	public boolean isNotificationsEnabled() {
 		return getBoolean("notificationsEnabled", true);
 	}

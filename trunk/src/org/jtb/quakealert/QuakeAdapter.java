@@ -3,6 +3,7 @@ package org.jtb.quakealert;
 import java.util.List;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,9 @@ public class QuakeAdapter extends ArrayAdapter {
 		
 		TextView row1Text = (TextView) view.findViewById(R.id.row1_text);
 		row1Text.setText("M" + q.getMagnitude() + " - " + q.getRegion());
-
+		if (QuakeService.newQuakes.contains(q)) {
+			row1Text.setTypeface(Typeface.DEFAULT_BOLD);
+		}
 		Distance d = new Distance(q.getDistance(location));	
 		TextView row2Text = (TextView) view.findViewById(R.id.row2_text);
 		row2Text.setText(q.getListDateString() + ", " + d.toString(quakePrefs));
