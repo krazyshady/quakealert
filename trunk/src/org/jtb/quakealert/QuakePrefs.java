@@ -1,5 +1,7 @@
 package org.jtb.quakealert;
 
+import java.util.Date;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -56,12 +58,40 @@ public class QuakePrefs {
 		e.commit();
 	}	
 
+	private void setInt(String key, int val) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		Editor e = prefs.edit();
+		e.putString(key, Integer.toString(val));
+		e.commit();
+	}	
+
+	private void setLong(String key, long val) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		Editor e = prefs.edit();
+		e.putString(key, Long.toString(val));
+		e.commit();
+	}	
+
 	private boolean getBoolean(String key, boolean def) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		boolean b = prefs.getBoolean(key, def);
 		return b;
 	}	
+	
+	public boolean isNotificationFlash() {
+		return getBoolean("notificationFlash", true);
+	}
+
+	public boolean isNotificationAlert() {
+		return getBoolean("notificationAlert", false);
+	}
+
+	public boolean isNotificationVibrate() {
+		return getBoolean("notificationVibrate", false);
+	}
 	
 	public boolean isWarn(String warnId) {
 		return getBoolean(warnId, true);
@@ -80,14 +110,47 @@ public class QuakePrefs {
 	}
 
 	public int getRange() {
-		return getInt("range", -1) * 1000; 
+		return getInt("range", -1); 
 	}
 
+	public void setRange(int meters) {
+		setInt("range", meters);
+	}
+	
 	public float getMagnitude() {
 		return getFloat("magnitude", (float)2.5); 
+	}
+
+	public Date getLastAckDate() {
+		long time = getLong("lastAckTime", 0);
+		return new Date(time);
+	}
+	
+	public void setLastAckDate(Date d) {
+		setLong("lastAckTime", d.getTime());
 	}
 	
 	public boolean isNotificationsEnabled() {
 		return getBoolean("notificationsEnabled", true);
+	}
+	
+	public String getUnits() {
+		return getString("units", "metric");
+	}
+	
+	public void setUnits(String units) {
+		setString("units", units);
+	}
+	
+	public boolean isUpgradedTo(int version) {
+		int upgradedTo = getInt("upgradedTo", 0);
+		if (upgradedTo >= version) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void setUpgradedTo(int version) {
+		setInt("upgradedTo", version);
 	}
 }

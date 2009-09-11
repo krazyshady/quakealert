@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -53,6 +56,8 @@ public class ListQuakesActivity extends Activity {
 		mThis = this;
 		mHandler = handler;
 
+		upgrade();
+
 		mListView = (ListView) findViewById(R.id.list);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -78,7 +83,7 @@ public class ListQuakesActivity extends Activity {
 			mServiceWarnDialog = builder.create();
 			mServiceWarnDialog.show();
 		}
-		
+
 		updateList();
 	}
 
@@ -145,5 +150,28 @@ public class ListQuakesActivity extends Activity {
 		switch (id) {
 		}
 		return null;
+	}
+
+	private void upgrade() {
+		PackageManager manager = getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+			Log.e(getClass().getSimpleName(), "could not get version", e);
+			return;
+		}
+		
+		QuakePrefs qp = new QuakePrefs(this);
+		if (!qp.isUpgradedTo(4)) {
+			// upgrade range from km to m
+			int km = qp.getRange();
+			if (km > 0) {
+				qp.setRange(km * 1000);
+			}
+
+		}
+		
+		qp.setUpgradedTo(info.versionCode);		
 	}
 }

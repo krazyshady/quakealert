@@ -2,21 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<ListPreference android:title="Range"
 		android:summary="Quakes within this range will be reported."
-		android:key="range" android:defaultValue="-1"
-		android:entries="@array/range_entries"
-		android:entryValues="@array/range_values" />
+		android:key="range" android:defaultValue="-1" android:entryValues="@array/range_values" />
 	<ListPreference android:title="Magnitude"
 		android:summary="Quakes with at least this magnitude will be reported."
 		android:key="magnitude" android:defaultValue="2.5"
-		android:entries="@array/magnitude_entries"
-		android:entryValues="@array/magnitude_values" />
-	<CheckBoxPreference android:title="Notifications"
+		android:entries="@array/magnitude_entries" android:entryValues="@array/magnitude_values" />
+	<ListPreference android:title="Units"
+		android:summary="Distances in metric or US units" android:key="units"
+		android:defaultValue="metric" android:entries="@array/units_entries"
+		android:entryValues="@array/units_values" />
+	<CheckBoxPreference android:title="Send Notifications?"
 		android:summary="Send notifications when quakes occur that match your criteria."
-		android:key="notificationsEnabled" android:defaultValue="true"/>
-	<ListPreference android:title="Interval"
-		android:summary="Check for new quakes this often."
-		android:key="interval" android:defaultValue="300000"
-		android:entries="@array/interval_entries"
-		android:entryValues="@array/interval_values" />
+		android:key="notificationsEnabled" android:defaultValue="true" />
+	<PreferenceCategory android:title="Notification Details">
+		<ListPreference android:title="Monitoring Interval"
+			android:summary="Check for new quakes this often." android:key="interval"
+			android:defaultValue="300000" android:entries="@array/interval_entries"
+			android:entryValues="@array/interval_values" />
+		<CheckBoxPreference android:title="Flash?"
+			android:summary="Notifications flash the message indiator?"
+			android:key="notificationFlash" android:defaultValue="true" />
+		<CheckBoxPreference android:title="Alert?"
+			android:summary="Notification sound alert?" android:key="notificationAlert"
+			android:defaultValue="false" />
+		<CheckBoxPreference android:title="Vibrate?"
+			android:summary="Notifications vibrate?" android:key="notificationVibrate"
+			android:defaultValue="false" />
+	</PreferenceCategory>
 </PreferenceScreen>
 
