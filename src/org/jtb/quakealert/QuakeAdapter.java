@@ -14,6 +14,7 @@ public class QuakeAdapter extends ArrayAdapter {
 	private Activity context;
 	private List<Quake> quakes;
 	private Location location;
+	private QuakePrefs quakePrefs;
 	
 	QuakeAdapter(Activity context, List<Quake> quakes, Location location) {
 		super(context, R.layout.quake, quakes);
@@ -21,6 +22,8 @@ public class QuakeAdapter extends ArrayAdapter {
 		this.context = context;
 		this.quakes = quakes;
 		this.location = location;
+		
+		quakePrefs = new QuakePrefs(context);
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -34,8 +37,9 @@ public class QuakeAdapter extends ArrayAdapter {
 		TextView row1Text = (TextView) view.findViewById(R.id.row1_text);
 		row1Text.setText("M" + q.getMagnitude() + " - " + q.getRegion());
 
+		Distance d = new Distance(q.getDistance(location));	
 		TextView row2Text = (TextView) view.findViewById(R.id.row2_text);
-		row2Text.setText(q.getListDateString() + ", " + (int)(q.getDistance(location)/1000) + "km");
+		row2Text.setText(q.getListDateString() + ", " + d.toString(quakePrefs));
 		
 		return view;
 	}	

@@ -14,7 +14,7 @@ import android.util.Log;
 public class Quakes {
     //private static final String QUAKES_URL = "http://earthquake.usgs.gov/eqcenter/catalogs/eqs7day-M1.txt";
     private static final String QUAKES_URL = "http://earthquake.usgs.gov/eqcenter/catalogs/eqs1day-M1.txt";
-    //private static final String QUAKES_URL = "http://gmclinet.red.iplanet.com:8080/eqs1day-M1.txt";
+    //private static final String QUAKES_URL = "http://192.168.0.100:8080/eqs1day-M1.txt";
     
 	private List<Quake> quakes = null;
 

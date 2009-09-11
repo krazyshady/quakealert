@@ -3,6 +3,7 @@ package org.jtb.quakealert;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -15,6 +16,18 @@ public class PrefsActivity extends PreferenceActivity {
 
 	static PrefsActivity mThis;
 
+	private ListPreference mRangePreference;
+	private ListPreference mMagnitudePreference;
+	private ListPreference mUnitsPreference;
+	
+	private void setRangeEntries(QuakePrefs qp) {
+		if (qp.getUnits().equals("metric")) {
+			mRangePreference.setEntries(R.array.range_metric_entries);
+		} else {
+			mRangePreference.setEntries(R.array.range_us_entries);
+		}		
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,6 +35,8 @@ public class PrefsActivity extends PreferenceActivity {
 
 		mThis = this;
 		setResult(UNCHANGED_RESULT);
+
+		QuakePrefs qp = new QuakePrefs(this);
 
 		Preference.OnPreferenceChangeListener changedListener = new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
@@ -31,11 +46,32 @@ public class PrefsActivity extends PreferenceActivity {
 			}
 		};
 
-		ListPreference lp = (ListPreference) findPreference("range");
-		lp.setOnPreferenceChangeListener(changedListener);
-		lp = (ListPreference) findPreference("magnitude");
-		lp.setOnPreferenceChangeListener(changedListener);
+		mRangePreference = (ListPreference) findPreference("range");
+		mRangePreference.setOnPreferenceChangeListener(changedListener);
+		setRangeEntries(qp);
+		
+		mMagnitudePreference = (ListPreference) findPreference("magnitude");
+		mMagnitudePreference.setOnPreferenceChangeListener(changedListener);
 
+		
+		Preference.OnPreferenceChangeListener unitsListener = new Preference.OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference,
+					Object newValue) {
+				String units = (String)newValue;
+				QuakePrefs qp = new QuakePrefs(mThis);
+				qp.setUnits(units);
+				setRangeEntries(qp);
+				ListQuakesActivity.mHandler.sendMessage(Message.obtain(
+						ListQuakesActivity.mHandler,
+						ListQuakesActivity.UPDATE_LIST_WHAT));
+				
+				return false;
+			}
+		};
+		
+		mUnitsPreference = (ListPreference) findPreference("units");
+		mUnitsPreference.setOnPreferenceChangeListener(unitsListener);
+		
 		Preference.OnPreferenceChangeListener notificationsListener = new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
@@ -56,20 +92,19 @@ public class PrefsActivity extends PreferenceActivity {
 		Preference.OnPreferenceChangeListener intervalListener = new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
-				String is = (String)newValue;
+				String is = (String) newValue;
 				QuakePrefs qp = new QuakePrefs(mThis);
 				qp.setInterval(is);
 				QuakeService.mThis.schedule();
-				
+
 				return false;
 			}
 		};
-			
+
 		ListPreference ip = (ListPreference) findPreference("interval");
-		QuakePrefs qp = new QuakePrefs(this);
 		ip.setEnabled(qp.isNotificationsEnabled());
 		ip.setOnPreferenceChangeListener(intervalListener);
-		
+
 		CheckBoxPreference cbp = (CheckBoxPreference) findPreference("notificationsEnabled");
 		cbp.setOnPreferenceChangeListener(notificationsListener);
 	}

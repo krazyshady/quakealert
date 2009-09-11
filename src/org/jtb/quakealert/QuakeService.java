@@ -2,12 +2,10 @@ package org.jtb.quakealert;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeSet;
 
 import android.app.Service;
 import android.content.Context;
@@ -25,7 +23,7 @@ public class QuakeService extends Service {
 	static QuakeService mThis = null;
 	static Quakes quakes = new Quakes();
 	static List<Quake> matchQuakes = new ArrayList<Quake>();
-	static List<Quake> newQuakes = new ArrayList<Quake>();
+	//static List<Quake> newQuakes = new ArrayList<Quake>();
 
 	private Timer mTimer;
 
@@ -40,34 +38,28 @@ public class QuakeService extends Service {
 
 	public static void refresh(Context context) {
 		Log.d(QuakeService.class.getSimpleName(), "refreshing");
+		QuakePrefs quakePrefs = new QuakePrefs(context);
+
 		quakes.update();
 
 		List<Quake> quakeList = quakes.get();
+		if (quakeList == null) {
+			return;
+		}
+
 		List<Quake> mqs = getQuakeMatches(context, quakeList);
 		Collections.sort(mqs, Quake.DATE_COMPARATOR);
 		mqs = mqs.subList(0, Math.min(mqs.size(), MAX_QUAKES));
 
-		List<Quake> nqs = new ArrayList<Quake>(newQuakes);
-		for (Quake quakeMatch : mqs) {
-			if (!matchQuakes.contains(quakeMatch)) {
-				nqs.add(quakeMatch);
-			}
-		}
+		matchQuakes = mqs;
 
-		if (!matchQuakes.equals(mqs)) {
-			matchQuakes = mqs;
-			ListQuakesActivity.mHandler.sendMessage(Message.obtain(
-					ListQuakesActivity.mHandler,
-					ListQuakesActivity.UPDATE_LIST_WHAT));
-		}
+		ListQuakesActivity.mHandler.sendMessage(Message.obtain(
+				ListQuakesActivity.mHandler,
+				ListQuakesActivity.UPDATE_LIST_WHAT));
 
-		if (!newQuakes.equals(nqs)) {
-			newQuakes = nqs;
-			QuakePrefs qp = new QuakePrefs(context);
-			if (qp.isNotificationsEnabled()) {
-				QuakeNotifier quakeNotifier = new QuakeNotifier(context);
-				quakeNotifier.alert();
-			}
+		if (quakePrefs.isNotificationsEnabled()) {
+			QuakeNotifier quakeNotifier = new QuakeNotifier(context);
+			quakeNotifier.alert();
 		}
 	}
 
@@ -92,9 +84,9 @@ public class QuakeService extends Service {
 				Log.d(QuakeService.class.getSimpleName(), "service running");
 				refresh(mThis);
 			}
-		}, 0, qp.getInterval());		
+		}, 0, qp.getInterval());
 	}
-	
+
 	private static Location getLocation(Context context) {
 		LocationManager lm = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
