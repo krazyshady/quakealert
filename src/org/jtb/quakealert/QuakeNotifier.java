@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 
 public class QuakeNotifier {
 	private static final int ALERT_ID = 0;
@@ -20,16 +21,7 @@ public class QuakeNotifier {
 	}
 
 	public void alert() {
-		int newQuakeCount = 0;
-		Date lastAckDate = quakePrefs.getLastAckDate();
-		
-		for (Quake q: QuakeService.matchQuakes) {
-			if (q.getDate().compareTo(lastAckDate) > 0) {
-				newQuakeCount++;
-			}
-		}
-		
-		if (newQuakeCount == 0) {
+		if (QuakeService.newQuakes == null || QuakeService.newQuakes.size() == 0) {
 			return;
 		}
 		
@@ -45,15 +37,19 @@ public class QuakeNotifier {
 			notification.defaults |= Notification.DEFAULT_SOUND;
 		}
 		if (quakePrefs.isNotificationFlash()) {
-			notification.defaults |= Notification.DEFAULT_LIGHTS;
+			notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+			notification.ledOffMS = 250;
+			notification.ledOnMS = 500;
+			notification.ledARGB = Color.parseColor("#ff0000");
 		}
 		if (quakePrefs.isNotificationVibrate()) {
-			notification.defaults |= Notification.DEFAULT_VIBRATE;
+			notification.vibrate = new long[] { 100, 100, 100, 100, 100, 100, 100, 100 };
 		}
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
+		notification.number = QuakeService.newQuakes.size();
+		
 		CharSequence contentTitle = "Quake Alert!";
-		CharSequence contentText = newQuakeCount + " M"
+		CharSequence contentText = QuakeService.newQuakes.size() + " M"
 				+ quakePrefs.getMagnitude() + "+ new quakes";
 		if (quakePrefs.getRange() > 0) {
 			Distance d = new Distance(quakePrefs.getRange());

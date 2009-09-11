@@ -22,8 +22,8 @@ public class QuakeService extends Service {
 
 	static QuakeService mThis = null;
 	static Quakes quakes = new Quakes();
-	static List<Quake> matchQuakes = new ArrayList<Quake>();
-	//static List<Quake> newQuakes = new ArrayList<Quake>();
+	static ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
+	static ArrayList<Quake> newQuakes = new ArrayList<Quake>();
 
 	private Timer mTimer;
 
@@ -42,17 +42,25 @@ public class QuakeService extends Service {
 
 		quakes.update();
 
-		List<Quake> quakeList = quakes.get();
+		ArrayList<Quake> quakeList = quakes.get();
 		if (quakeList == null) {
 			return;
 		}
 
-		List<Quake> mqs = getQuakeMatches(context, quakeList);
+		ArrayList<Quake> mqs = getQuakeMatches(context, quakeList);
 		Collections.sort(mqs, Quake.DATE_COMPARATOR);
-		mqs = mqs.subList(0, Math.min(mqs.size(), MAX_QUAKES));
+		mqs = new ArrayList<Quake>(mqs.subList(0, Math.min(mqs.size(), MAX_QUAKES)));
 
+		ArrayList<Quake> nqs = new ArrayList<Quake>();
+		for (Quake q: mqs) {
+			if (!matchQuakes.contains(q)) {
+				nqs.add(q);
+			}
+		}
+		
 		matchQuakes = mqs;
-
+		newQuakes = nqs;
+		
 		ListQuakesActivity.mHandler.sendMessage(Message.obtain(
 				ListQuakesActivity.mHandler,
 				ListQuakesActivity.UPDATE_LIST_WHAT));
@@ -102,8 +110,8 @@ public class QuakeService extends Service {
 		return l;
 	}
 
-	private static List<Quake> getQuakeMatches(Context context,
-			List<Quake> quakeList) {
+	private static ArrayList<Quake> getQuakeMatches(Context context,
+			ArrayList<Quake> quakeList) {
 		QuakePrefs prefs = new QuakePrefs(context);
 
 		if (quakeList == null || quakeList.size() == 0) {
@@ -114,7 +122,7 @@ public class QuakeService extends Service {
 		float magnitude = prefs.getMagnitude();
 		Location location = getLocation(context);
 
-		List<Quake> matchQuakes = new ArrayList<Quake>();
+		ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
 		for (Quake quake : quakeList) {
 			if (quake.matches(magnitude, range, location)) {
 				matchQuakes.add(quake);
