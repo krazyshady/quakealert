@@ -41,7 +41,6 @@ public class Quakes {
                 quakes.add(quake);
                 //Log.d(getClass().getSimpleName(), "read quake: " + quake);
             }
-            Collections.sort(quakes, Quake.DATE_COMPARATOR);
         } catch (Throwable t) {
             Log.w(getClass().getSimpleName(), t);
             quakes = null;
