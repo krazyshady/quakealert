@@ -1,5 +1,6 @@
 package org.jtb.quakealert;
 
+import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
@@ -16,6 +17,7 @@ public class QuakeAdapter extends ArrayAdapter {
 	private List<Quake> quakes;
 	private Location location;
 	private QuakePrefs quakePrefs;
+	private HashSet<String> newIds;
 	
 	QuakeAdapter(Activity context, List<Quake> quakes, Location location) {
 		super(context, R.layout.quake, quakes);
@@ -25,6 +27,7 @@ public class QuakeAdapter extends ArrayAdapter {
 		this.location = location;
 		
 		quakePrefs = new QuakePrefs(context);
+		newIds = quakePrefs.getNewIds();
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -37,7 +40,7 @@ public class QuakeAdapter extends ArrayAdapter {
 		
 		TextView row1Text = (TextView) view.findViewById(R.id.row1_text);
 		row1Text.setText("M" + q.getMagnitude() + " - " + q.getRegion());
-		if (QuakeService.newQuakes.contains(q)) {
+		if (newIds.contains(q.getId())) {
 			row1Text.setTypeface(Typeface.DEFAULT_BOLD);
 		}
 		Distance d = new Distance(q.getDistance(location));	

@@ -1,24 +1,24 @@
 package org.jtb.quakealert;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.Preference.OnPreferenceClickListener;
 
 public class PrefsActivity extends PreferenceActivity {
 	static final int CHANGED_RESULT = 1;
 	static final int UNCHANGED_RESULT = 0;
 
-	static PrefsActivity mThis;
-
+	private PrefsActivity mThis;
 	private ListPreference mRangePreference;
 	private ListPreference mMagnitudePreference;
 	private ListPreference mUnitsPreference;
+	private ListPreference mIntervalPreference;
+	private CheckBoxPreference mAlertPreference;
+	private CheckBoxPreference mVibratePreference;
+	private CheckBoxPreference mFlashPreference;
 	
 	private void setRangeEntries(QuakePrefs qp) {
 		if (qp.getUnits().equals("metric")) {
@@ -36,6 +36,14 @@ public class PrefsActivity extends PreferenceActivity {
 		mThis = this;
 		setResult(UNCHANGED_RESULT);
 
+		mRangePreference = (ListPreference) findPreference("range");
+		mMagnitudePreference = (ListPreference) findPreference("magnitude");
+		mUnitsPreference = (ListPreference) findPreference("units");
+		mIntervalPreference = (ListPreference) findPreference("interval");
+		mAlertPreference = (CheckBoxPreference) findPreference("notificationAlert");
+		mVibratePreference = (CheckBoxPreference) findPreference("notificationVibrate");
+		mFlashPreference = (CheckBoxPreference) findPreference("notificationFlash");
+		
 		QuakePrefs qp = new QuakePrefs(this);
 
 		Preference.OnPreferenceChangeListener changedListener = new Preference.OnPreferenceChangeListener() {
@@ -46,13 +54,10 @@ public class PrefsActivity extends PreferenceActivity {
 			}
 		};
 
-		mRangePreference = (ListPreference) findPreference("range");
 		mRangePreference.setOnPreferenceChangeListener(changedListener);
 		setRangeEntries(qp);
 		
-		mMagnitudePreference = (ListPreference) findPreference("magnitude");
 		mMagnitudePreference.setOnPreferenceChangeListener(changedListener);
-
 		
 		Preference.OnPreferenceChangeListener unitsListener = new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
@@ -61,29 +66,30 @@ public class PrefsActivity extends PreferenceActivity {
 				QuakePrefs qp = new QuakePrefs(mThis);
 				qp.setUnits(units);
 				setRangeEntries(qp);
-				ListQuakesActivity.mHandler.sendMessage(Message.obtain(
-						ListQuakesActivity.mHandler,
-						ListQuakesActivity.UPDATE_LIST_WHAT));
 				
+				sendBroadcast(new Intent("updateList"));				
 				return false;
 			}
 		};
 		
-		mUnitsPreference = (ListPreference) findPreference("units");
 		mUnitsPreference.setOnPreferenceChangeListener(unitsListener);
 		
 		Preference.OnPreferenceChangeListener notificationsListener = new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
 				boolean checked = ((Boolean) newValue).booleanValue();
-				Intent i = new Intent(mThis, QuakeService.class);
-				ListPreference ip = (ListPreference) findPreference("interval");
 				if (checked) {
-					ip.setEnabled(true);
-					startService(i);
+					mIntervalPreference.setEnabled(true);
+					mFlashPreference.setEnabled(true);
+					mAlertPreference.setEnabled(true);
+					mVibratePreference.setEnabled(true);
+					sendBroadcast(new Intent("schedule", null, mThis, QuakeReceiver.class));
 				} else {
-					ip.setEnabled(false);
-					stopService(i);
+					mIntervalPreference.setEnabled(false);
+					mFlashPreference.setEnabled(false);
+					mAlertPreference.setEnabled(false);
+					mVibratePreference.setEnabled(false);
+					sendBroadcast(new Intent("cancel", null, mThis, QuakeReceiver.class));
 				}
 				return true;
 			}
@@ -95,7 +101,7 @@ public class PrefsActivity extends PreferenceActivity {
 				String is = (String) newValue;
 				QuakePrefs qp = new QuakePrefs(mThis);
 				qp.setInterval(is);
-				QuakeService.mThis.schedule();
+				sendBroadcast(new Intent("schedule", null, mThis, QuakeReceiver.class));
 
 				return false;
 			}

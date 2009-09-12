@@ -1,6 +1,7 @@
 package org.jtb.quakealert;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,7 +22,9 @@ public class QuakeNotifier {
 	}
 
 	public void alert() {
-		if (QuakeService.newQuakes == null || QuakeService.newQuakes.size() == 0) {
+		HashSet<String> newIds = quakePrefs.getNewIds();
+		int size = newIds.size();
+		if (size == 0) {
 			return;
 		}
 		
@@ -46,11 +49,11 @@ public class QuakeNotifier {
 			notification.vibrate = new long[] { 100, 100, 100, 100, 100, 100, 100, 100 };
 		}
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notification.number = QuakeService.newQuakes.size();
+		notification.number = size;
 		
 		CharSequence contentTitle = "Quake Alert!";
-		CharSequence contentText = QuakeService.newQuakes.size() + " M"
-				+ quakePrefs.getMagnitude() + "+ new quakes";
+		CharSequence contentText = size + " new M"
+				+ quakePrefs.getMagnitude() + "+ quakes";
 		if (quakePrefs.getRange() > 0) {
 			Distance d = new Distance(quakePrefs.getRange());
 			contentText = contentText + " within " + d.toString(quakePrefs);
