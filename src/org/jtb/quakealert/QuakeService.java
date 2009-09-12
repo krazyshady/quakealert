@@ -3,6 +3,7 @@ package org.jtb.quakealert;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +24,7 @@ public class QuakeService extends Service {
 	static QuakeService mThis = null;
 	static Quakes quakes = new Quakes();
 	static ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
-	static ArrayList<Quake> newQuakes = new ArrayList<Quake>();
+	static HashSet<Quake> newQuakes = new HashSet<Quake>();
 
 	private Timer mTimer;
 
@@ -48,19 +49,23 @@ public class QuakeService extends Service {
 		}
 
 		ArrayList<Quake> mqs = getQuakeMatches(context, quakeList);
-		Collections.sort(mqs, Quake.DATE_COMPARATOR);
-		mqs = new ArrayList<Quake>(mqs.subList(0, Math.min(mqs.size(), MAX_QUAKES)));
-
-		ArrayList<Quake> nqs = new ArrayList<Quake>();
-		for (Quake q: mqs) {
+		HashSet<Quake> nqs = new HashSet<Quake>(newQuakes);
+		int mqsSize = mqs.size();
+		for (int i = 0; i < mqsSize; i++) {
+			Quake q = mqs.get(i);
 			if (!matchQuakes.contains(q)) {
 				nqs.add(q);
 			}
 		}
-		
+		Collections.sort(mqs, new Quake.ListComparator(nqs));
+		if (mqsSize > MAX_QUAKES) {
+			mqs = new ArrayList<Quake>(mqs.subList(0, MAX_QUAKES));
+		}
+		nqs.retainAll(mqs);
+
 		matchQuakes = mqs;
 		newQuakes = nqs;
-		
+
 		ListQuakesActivity.mHandler.sendMessage(Message.obtain(
 				ListQuakesActivity.mHandler,
 				ListQuakesActivity.UPDATE_LIST_WHAT));
@@ -123,7 +128,9 @@ public class QuakeService extends Service {
 		Location location = getLocation(context);
 
 		ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
-		for (Quake quake : quakeList) {
+		int quakeListSize = quakeList.size();
+		for (int i = 0; i < quakeListSize; i++) {
+			Quake quake = quakeList.get(i);
 			if (quake.matches(magnitude, range, location)) {
 				matchQuakes.add(quake);
 			}

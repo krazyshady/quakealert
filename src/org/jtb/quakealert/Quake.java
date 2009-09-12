@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,21 +29,38 @@ public class Quake {
 	private static final int DST_OFFSET = Calendar.getInstance().get(
 			Calendar.DST_OFFSET);
 
-	public static class DateComparator implements Comparator<Quake> {
-		public int compare(Quake q1, Quake q2) {
-			return q2.getDate().compareTo(q1.getDate());
+	static class ListComparator implements Comparator<Quake> {
+		private HashSet<Quake> newQuakes;
+
+		public ListComparator(HashSet<Quake> newQuakes) {
+			this.newQuakes = newQuakes;
 		}
 
-	}
+		public int compare(Quake q1, Quake q2) {
+			if (newQuakes != null && newQuakes.size() > 0) {
+				boolean q1New = newQuakes.contains(q1);
+				boolean q2New = newQuakes.contains(q2);
 
-	public static DateComparator DATE_COMPARATOR = new DateComparator();
+				if (q2New && !q1New) {
+					return 1;
+				}
+				if (q1New && !q2New) {
+					return -1;
+				}
+			}
+
+			return q2.getDate().compareTo(q1.getDate());
+		}
+	}
 
 	private String source;
 	private String id;
 	private String version;
 	private Date date;
 	private double latitude;
+	private int latitudeE6;
 	private double longitude;
+	private int longitudeE6;
 	private float magnitude;
 	private float depth;
 	private int nst;
@@ -73,6 +91,9 @@ public class Quake {
 			return;
 		}
 
+		latitudeE6 = (int) (latitude * Math.pow(10, 6));
+		longitudeE6 = (int) (longitude * Math.pow(10, 6));
+
 		if (magnitude < 2) {
 			color = Color.parseColor("#00ff00");
 		} else if (magnitude < 3) {
@@ -87,7 +108,7 @@ public class Quake {
 			color = Color.parseColor("#ff3300");
 		}
 
-		geoPoint = new GeoPoint(getLatitudeE6(), getLongitudeE6());
+		geoPoint = new GeoPoint(latitudeE6, longitudeE6);
 	}
 
 	private static Date parseDate(String s) {
@@ -190,11 +211,11 @@ public class Quake {
 	}
 
 	public int getLatitudeE6() {
-		return (int) (latitude * Math.pow(10, 6));
+		return latitudeE6;
 	}
 
 	public int getLongitudeE6() {
-		return (int) (longitude * Math.pow(10, 6));
+		return longitudeE6;
 	}
 
 	public GeoPoint getGeoPoint() {
