@@ -29,13 +29,14 @@ public class QuakeMapActivity extends MapActivity {
 					.get("org.jtb.quakealert.quake.position") : null;
 		}
 
-		Quake quake = QuakeService.matchQuakes.get(p);
+		Quake quake = QuakeReceiver.matchQuakes.get(p);
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 
 		List<Overlay> mapOverlays = mapView.getOverlays();
-		for (int i = QuakeService.matchQuakes.size() - 1; i != -1; i--) {
-			Quake q = QuakeService.matchQuakes.get(i);
+		int size = QuakeReceiver.matchQuakes.size();
+		for (int i = size - 1; i != -1; i--) {
+			Quake q = QuakeReceiver.matchQuakes.get(i);
 
 			Drawable drawable = this.getResources().getDrawable(R.drawable.one);
 			QuakeOverlay itemizedOverlay = new QuakeOverlay(drawable, q);

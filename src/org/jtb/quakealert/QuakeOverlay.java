@@ -63,7 +63,7 @@ public class QuakeOverlay extends ItemizedOverlay {
 		String s1 = "M" + quake.getMagnitude();
 		String s2 = quake.getShortDateString();
 
-		float rw = Math.max(text.measureText(s1), text.measureText(s2));
+		int rw = (int) Math.ceil(Math.max(text.measureText(s1), text.measureText(s2)));
 
 		// background
 		Paint bg = new Paint();
@@ -76,24 +76,24 @@ public class QuakeOverlay extends ItemizedOverlay {
 		int radius = ((int)quake.getMagnitude())*2;
 		
 		RectF rect = new RectF();
-		float rx1 = point.x + radius + PADDING * 2;
-		float ry1 = point.y - (TEXTSIZE * TEXTLINES) / 2 - PADDING;
-		float rx2 = rx1 + rw + PADDING * 2;
-		float ry2 = ry1 + TEXTSIZE * TEXTLINES + PADDING * 2;
+		int rx1 = point.x + radius + PADDING * 2;
+		int ry1 = point.y - (TEXTSIZE * TEXTLINES) / 2 - PADDING;
+		int rx2 = rx1 + rw + PADDING * 2;
+		int ry2 = ry1 + TEXTSIZE * TEXTLINES + PADDING * 2;
 		rect.set(rx1, ry1, rx2, ry2);
 
 		RectF rectOutline = new RectF();
-		float rox1 = rx1-1;
-		float roy1 = ry1-1;
-		float rox2 = rx2+1;
-		float roy2 = ry2+1;
+		int rox1 = rx1-1;
+		int roy1 = ry1-1;
+		int rox2 = rx2+1;
+		int roy2 = ry2+1;
 		rectOutline.set(rox1, roy1, rox2, roy2);
 
 		RectF rectGlow = new RectF();
-		float rgx1 = rx1-2;
-		float rgy1 = ry1-2;
-		float rgx2 = rx2+2;
-		float rgy2 = ry2+2;
+		int rgx1 = rx1-2;
+		int rgy1 = ry1-2;
+		int rgx2 = rx2+2;
+		int rgy2 = ry2+2;
 		rectGlow.set(rgx1, rgy1, rgx2, rgy2);
 
 		// the circle to mark the spot
@@ -116,12 +116,12 @@ public class QuakeOverlay extends ItemizedOverlay {
 			canvas.drawRoundRect(rectOutline, 2, 2, bgOutline);
 			canvas.drawRoundRect(rect, 2, 2, bg);
 
-			float t1x = rx1 + PADDING;
-			float t1y = ry1 + TEXTSIZE;
+			int t1x = rx1 + PADDING;
+			int t1y = ry1 + TEXTSIZE;
 			canvas.drawText("M" + quake.getMagnitude(), t1x, t1y, text);
 
-			float t2x = rx1 + PADDING;
-			float t2y = t1y + TEXTSIZE;
+			int t2x = rx1 + PADDING;
+			int t2y = t1y + TEXTSIZE;
 
 			canvas.drawText(quake.getShortDateString(), t2x, t2y, text);
 		}

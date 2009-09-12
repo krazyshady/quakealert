@@ -30,16 +30,16 @@ public class Quake {
 			Calendar.DST_OFFSET);
 
 	static class ListComparator implements Comparator<Quake> {
-		private HashSet<Quake> newQuakes;
+		private HashSet<String> newIds;
 
-		public ListComparator(HashSet<Quake> newQuakes) {
-			this.newQuakes = newQuakes;
+		public ListComparator(HashSet<String> newIds) {
+			this.newIds = newIds;
 		}
 
 		public int compare(Quake q1, Quake q2) {
-			if (newQuakes != null && newQuakes.size() > 0) {
-				boolean q1New = newQuakes.contains(q1);
-				boolean q2New = newQuakes.contains(q2);
+			if (newIds != null && newIds.size() > 0) {
+				boolean q1New = newIds.contains(q1.getId());
+				boolean q2New = newIds.contains(q2.getId());
 
 				if (q2New && !q1New) {
 					return 1;
