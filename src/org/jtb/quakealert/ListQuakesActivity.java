@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,7 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ListQuakesActivity extends Activity {
@@ -31,9 +27,13 @@ public class ListQuakesActivity extends Activity {
 	private static final int PREFS_REQUEST = 0;
 
 	static final int REFRESH_DIALOG = 0;
+	static final int LOCATION_ERROR_DIALOG = 1;
+	static final int NETWORK_ERROR_DIALOG = 2;
 
 	private AlertDialog mServiceWarnDialog;
 	private ProgressDialog mRefreshDialog;
+	private AlertDialog mLocationErrorDialog;
+	private AlertDialog mNetworkErrorDialog;
 
 	private ListView mList;
 	private LinearLayout mNoQuakesLayout;
@@ -87,18 +87,25 @@ public class ListQuakesActivity extends Activity {
 		super.onResume();
 
 		updateList();
-		
+
 		registerReceiver(listUpdateReceiver, new IntentFilter("updateList"));
-		registerReceiver(listUpdateReceiver, new IntentFilter("showRefreshDialog"));
-		registerReceiver(listUpdateReceiver, new IntentFilter("dismissRefreshDialog"));	
+		registerReceiver(listUpdateReceiver, new IntentFilter(
+				"showRefreshDialog"));
+		registerReceiver(listUpdateReceiver, new IntentFilter(
+				"dismissRefreshDialog"));
+		registerReceiver(listUpdateReceiver, new IntentFilter(
+				"showLocationErrorDialog"));
+		registerReceiver(listUpdateReceiver, new IntentFilter(
+				"showNetworkErrorDialog"));
 	}
 
 	public void updateList() {
 		Log.d(getClass().getSimpleName(), "updating list");
-		
+
 		if (QuakeRefreshService.matchQuakes != null
 				&& QuakeRefreshService.matchQuakes.size() > 0) {
-			QuakeAdapter qa = new QuakeAdapter(this, QuakeRefreshService.matchQuakes,
+			QuakeAdapter qa = new QuakeAdapter(this,
+					QuakeRefreshService.matchQuakes,
 					QuakeRefreshService.location);
 			mNoQuakesLayout.setVisibility(View.GONE);
 			mList.setVisibility(View.VISIBLE);
@@ -123,11 +130,11 @@ public class ListQuakesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case REFRESH_MENU:
-			sendBroadcast(new Intent("refresh", null, this, QuakeRefreshReceiver.class));
+			sendBroadcast(new Intent("refresh", null, this,
+					QuakeRefreshReceiver.class));
 			return true;
 		case PREFS_MENU:
-			Intent prefsActivity = new Intent(this,
-					PrefsActivity.class);
+			Intent prefsActivity = new Intent(this, PrefsActivity.class);
 			startActivityForResult(prefsActivity, PREFS_REQUEST);
 			return true;
 		}
@@ -138,7 +145,7 @@ public class ListQuakesActivity extends Activity {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		switch (requestCode) {
 		case PREFS_REQUEST:
 			if (resultCode == PrefsActivity.CHANGED_RESULT) {
@@ -157,6 +164,32 @@ public class ListQuakesActivity extends Activity {
 			mRefreshDialog.setIndeterminate(true);
 			mRefreshDialog.setCancelable(false);
 			return mRefreshDialog;
+		case LOCATION_ERROR_DIALOG:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Unknown Location");
+			builder
+					.setMessage("Ensure that you have at least on location source enabled in Settings > Security & location.");
+			builder.setNeutralButton(R.string.ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dismissDialog(LOCATION_ERROR_DIALOG);
+						}
+					});
+			mLocationErrorDialog = builder.create();
+			return mLocationErrorDialog;
+		case NETWORK_ERROR_DIALOG:
+			builder = new AlertDialog.Builder(this);
+			builder.setTitle("Network Error");
+			builder
+					.setMessage("Could not retrieve recent quakes. Ensure that you have a network connection (mobile or wifi).");
+			builder.setNeutralButton(R.string.ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dismissDialog(NETWORK_ERROR_DIALOG);
+						}
+					});
+			mNetworkErrorDialog = builder.create();
+			return mNetworkErrorDialog;
 		}
 		return null;
 	}
