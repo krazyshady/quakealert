@@ -83,13 +83,13 @@ public class PrefsActivity extends PreferenceActivity {
 					mFlashPreference.setEnabled(true);
 					mAlertPreference.setEnabled(true);
 					mVibratePreference.setEnabled(true);
-					sendBroadcast(new Intent("schedule", null, mThis, QuakeReceiver.class));
+					sendBroadcast(new Intent("schedule", null, mThis, QuakeRefreshReceiver.class));
 				} else {
 					mIntervalPreference.setEnabled(false);
 					mFlashPreference.setEnabled(false);
 					mAlertPreference.setEnabled(false);
 					mVibratePreference.setEnabled(false);
-					sendBroadcast(new Intent("cancel", null, mThis, QuakeReceiver.class));
+					sendBroadcast(new Intent("cancel", null, mThis, QuakeRefreshReceiver.class));
 				}
 				return true;
 			}
@@ -101,7 +101,7 @@ public class PrefsActivity extends PreferenceActivity {
 				String is = (String) newValue;
 				QuakePrefs qp = new QuakePrefs(mThis);
 				qp.setInterval(is);
-				sendBroadcast(new Intent("schedule", null, mThis, QuakeReceiver.class));
+				sendBroadcast(new Intent("schedule", null, mThis, QuakeRefreshReceiver.class));
 
 				return false;
 			}
