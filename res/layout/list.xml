@@ -3,14 +3,35 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<LinearLayout android:id="@+id/no_quakes_layout"
-		android:gravity="center"
-		android:orientation="vertical" android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-		<TextView android:text="@string/no_quakes_summary" android:textSize="16px" android:layout_width="fill_parent"
+		android:paddingLeft="16px" android:paddingRight="16px"
+		android:paddingTop="16px" android:paddingBottom="16px"
+		android:layout_marginLeft="32px" android:layout_marginRight="32px"
+		android:layout_marginTop="32px" android:layout_marginBottom="32px"
+		android:gravity="center" android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<TextView android:text="@string/no_quakes_summary"
+			android:textSize="16px" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center" />
-		<TextView android:text="@string/no_quakes_detail"
+		<TextView android:text="@string/no_quakes_good"
 			android:textSize="12px" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center" />
+		<LinearLayout android:gravity="center"
+			android:orientation="vertical" android:paddingTop="16px"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<TextView android:text="@string/no_quakes_detail_network"
+
+				android:textSize="12px" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />
+			<TextView android:text="@string/no_quakes_detail_source"
+				android:paddingTop="8px" android:textSize="12px"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			<TextView android:text="@string/no_quakes_detail_prefs"
+				android:paddingTop="8px" android:textSize="12px"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			<TextView android:text="@string/no_quakes_refresh"
+				android:paddingTop="16px" android:gravity="center" android:textSize="12px"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+		</LinearLayout>
 	</LinearLayout>
 	<ListView android:id="@+id/list" android:visibility="gone"
 		android:layout_width="fill_parent" android:layout_height="fill_parent" />
