@@ -32,12 +32,14 @@ public class QuakeRefreshService extends IntentService {
 				context.sendBroadcast(new Intent("showRefreshDialog"));
 				setLocation(context);
 				if (location == null) {
-					matchQuakes = null;
+					context.sendBroadcast(new Intent("showLocationErrorDialog"));
+					return;
 				}
 				
 				quakes.update();
 				ArrayList<Quake> quakeList = quakes.get();
 				if (quakeList == null) {
+					context.sendBroadcast(new Intent("showNetworkErrorDialog"));
 					return;
 				}
 
