@@ -16,7 +16,7 @@ import android.util.Log;
 public class QuakeRefreshService extends IntentService {
 	private static int MAX_QUAKES = 1000;
 	private static final Quakes quakes = new Quakes();
-
+	static Location location = null;
 	static ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
 
 	class RefreshRunner implements Runnable {
@@ -30,11 +30,14 @@ public class QuakeRefreshService extends IntentService {
 			Log.d(getClass().getSimpleName(), "refreshing");
 			try {
 				context.sendBroadcast(new Intent("showRefreshDialog"));
-
+				setLocation(context);
+				if (location == null) {
+					matchQuakes = null;
+				}
+				
 				quakes.update();
 				ArrayList<Quake> quakeList = quakes.get();
 				if (quakeList == null) {
-					context.sendBroadcast(new Intent("dismissRefreshDialog"));
 					return;
 				}
 
@@ -43,6 +46,10 @@ public class QuakeRefreshService extends IntentService {
 				HashSet<String> matchIds = quakePrefs.getMatchIds();
 
 				matchQuakes = getQuakeMatches(context, quakeList);
+				if (matchQuakes == null) {
+					return;
+				}
+				
 				int mqsSize = matchQuakes.size();
 				Log.d(getClass().getSimpleName(), "found " + mqsSize
 						+ " matches");
@@ -65,13 +72,13 @@ public class QuakeRefreshService extends IntentService {
 				quakePrefs.setNewIds(newIds);
 
 				context.sendBroadcast(new Intent("updateList"));
-
+				
 				if (quakePrefs.isNotificationsEnabled()) {
 					QuakeNotifier quakeNotifier = new QuakeNotifier(context);
 					quakeNotifier.alert();
 				}
-				context.sendBroadcast(new Intent("dismissRefreshDialog"));
 			} finally {
+				context.sendBroadcast(new Intent("dismissRefreshDialog"));
 				context.sendBroadcast(new Intent("release", null, context,
 						WakeLockReceiver.class));
 			}
@@ -92,7 +99,7 @@ public class QuakeRefreshService extends IntentService {
 		}
 	}
 
-	private static Location getLocation(Context context) {
+	private static void setLocation(Context context) {
 		LocationManager lm = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		String name = lm.getBestProvider(new Criteria(), true);
@@ -100,11 +107,11 @@ public class QuakeRefreshService extends IntentService {
 			// TODO: error dialog an exit (this.finish())?
 			Log.e(QuakeRefreshService.class.getSimpleName(),
 					"no best location provider returned");
+			location = null;
+			return;
 		}
 		// LocationProvider lp = lm.getProvider(name);
-		Location l = lm.getLastKnownLocation(name);
-
-		return l;
+		location = lm.getLastKnownLocation(name);
 	}
 
 	private static ArrayList<Quake> getQuakeMatches(Context context,
@@ -117,8 +124,10 @@ public class QuakeRefreshService extends IntentService {
 
 		int range = prefs.getRange();
 		float magnitude = prefs.getMagnitude();
-		Location location = getLocation(context);
-
+		if (location == null) {
+			return null;
+		}
+		
 		ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
 		int quakeListSize = quakeList.size();
 		for (int i = 0; i < quakeListSize; i++) {

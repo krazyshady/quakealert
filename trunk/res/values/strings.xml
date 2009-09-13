@@ -9,5 +9,9 @@
 <string name="do_not_warn">Do not warn me again</string>
 <string name="service_warn">By default, Quake Alert! runs periodically to discover quake events and send notifications. You can disable notifications in Menu &gt; Preferences. When notifications are disabled, you will no longer receive quake notifications, and you must manually refresh to discover new quakes via Menu &gt; Refresh.</string>
 <string name="no_quakes_summary">No quakes.</string>
-<string name="no_quakes_detail">Ensure you have a network connection, or try changing your range or magntiude settings via Menu &gt; Preferences. You can manually refresh via Menu &gt; Refresh.</string>
+<string name="no_quakes_detail_network">1. Ensure you have a network connection (mobile or wifi).</string>
+<string name="no_quakes_detail_source">2. Check that you have at least one location source enabled (Settings &gt; Security &amp; location).</string>
+<string name="no_quakes_detail_prefs">3. Change your range and magnitude settings via Menu &gt; Preferences.</string>
+<string name="no_quakes_refresh">You can manually refresh via Menu &gt; Refresh.</string>
+<string name="no_quakes_good">This is a good thing, but if it doesn't seem right ...</string>
 </resources>

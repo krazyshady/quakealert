@@ -93,27 +93,13 @@ public class ListQuakesActivity extends Activity {
 		registerReceiver(listUpdateReceiver, new IntentFilter("dismissRefreshDialog"));	
 	}
 
-	private Location getLocation() {
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		String name = lm.getBestProvider(new Criteria(), true);
-		if (name == null) {
-			// TODO: error dialog an exit (this.finish())?
-			Log.e(getClass().getSimpleName(),
-					"no best location provider returned");
-		}
-		// LocationProvider lp = lm.getProvider(name);
-		Location l = lm.getLastKnownLocation(name);
-
-		return l;
-	}
-
 	public void updateList() {
 		Log.d(getClass().getSimpleName(), "updating list");
 		
 		if (QuakeRefreshService.matchQuakes != null
 				&& QuakeRefreshService.matchQuakes.size() > 0) {
 			QuakeAdapter qa = new QuakeAdapter(this, QuakeRefreshService.matchQuakes,
-					getLocation());
+					QuakeRefreshService.location);
 			mNoQuakesLayout.setVisibility(View.GONE);
 			mList.setVisibility(View.VISIBLE);
 			mList.setAdapter(qa);
@@ -140,7 +126,7 @@ public class ListQuakesActivity extends Activity {
 			sendBroadcast(new Intent("refresh", null, this, QuakeRefreshReceiver.class));
 			return true;
 		case PREFS_MENU:
-			Intent prefsActivity = new Intent(getBaseContext(),
+			Intent prefsActivity = new Intent(this,
 					PrefsActivity.class);
 			startActivityForResult(prefsActivity, PREFS_REQUEST);
 			return true;
@@ -151,10 +137,12 @@ public class ListQuakesActivity extends Activity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
 		switch (requestCode) {
 		case PREFS_REQUEST:
 			if (resultCode == PrefsActivity.CHANGED_RESULT) {
-				sendBroadcast(new Intent("receiverRefresh", null, this,
+				sendBroadcast(new Intent("refresh", null, this,
 						QuakeRefreshReceiver.class));
 			}
 			break;
