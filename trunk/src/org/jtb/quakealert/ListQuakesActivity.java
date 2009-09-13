@@ -1,11 +1,9 @@
 package org.jtb.quakealert;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,14 +14,14 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ListQuakesActivity extends Activity {
@@ -32,23 +30,29 @@ public class ListQuakesActivity extends Activity {
 
 	private static final int PREFS_REQUEST = 0;
 
+	static final int REFRESH_DIALOG = 0;
+
 	private AlertDialog mServiceWarnDialog;
-	private ListView mListView;
-	private ListUpdateReceiver listUpdateReceiver;
+	private ProgressDialog mRefreshDialog;
+
+	private ListView mList;
+	private LinearLayout mNoQuakesLayout;
+	private ListReceiver listUpdateReceiver;
 	private ListQuakesActivity mThis;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list);
 
 		mThis = this;
-		listUpdateReceiver = new ListUpdateReceiver(this);
-		
+		listUpdateReceiver = new ListReceiver(this);
+
 		upgrade();
 
-		mListView = (ListView) findViewById(R.id.list);
-		mListView.setOnItemClickListener(new OnItemClickListener() {
+		mNoQuakesLayout = (LinearLayout) findViewById(R.id.no_quakes_layout);
+		mList = (ListView) findViewById(R.id.list);
+		mList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				Intent i = new Intent(mThis, QuakeMapActivity.class);
@@ -60,7 +64,8 @@ public class ListQuakesActivity extends Activity {
 
 		QuakePrefs qp = new QuakePrefs(this);
 		if (qp.isNotificationsEnabled()) {
-			sendBroadcast(new Intent("schedule", null, this, QuakeReceiver.class));
+			sendBroadcast(new Intent("schedule", null, this,
+					QuakeRefreshReceiver.class));
 		}
 
 		WarnDialog.Builder builder = new WarnDialog.Builder(this,
@@ -74,15 +79,20 @@ public class ListQuakesActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		unregisterReceiver(listUpdateReceiver);		
+		unregisterReceiver(listUpdateReceiver);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		updateList();
+		
 		registerReceiver(listUpdateReceiver, new IntentFilter("updateList"));
+		registerReceiver(listUpdateReceiver, new IntentFilter("showRefreshDialog"));
+		registerReceiver(listUpdateReceiver, new IntentFilter("dismissRefreshDialog"));	
 	}
-	
+
 	private Location getLocation() {
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		String name = lm.getBestProvider(new Criteria(), true);
@@ -98,10 +108,18 @@ public class ListQuakesActivity extends Activity {
 	}
 
 	public void updateList() {
-		if (QuakeReceiver.matchQuakes != null) {
-			QuakeAdapter qa = new QuakeAdapter(this, QuakeReceiver.matchQuakes,
+		Log.d(getClass().getSimpleName(), "updating list");
+		
+		if (QuakeRefreshService.matchQuakes != null
+				&& QuakeRefreshService.matchQuakes.size() > 0) {
+			QuakeAdapter qa = new QuakeAdapter(this, QuakeRefreshService.matchQuakes,
 					getLocation());
-			mListView.setAdapter(qa);
+			mNoQuakesLayout.setVisibility(View.GONE);
+			mList.setVisibility(View.VISIBLE);
+			mList.setAdapter(qa);
+		} else {
+			mNoQuakesLayout.setVisibility(View.VISIBLE);
+			mList.setVisibility(View.GONE);
 		}
 	}
 
@@ -119,7 +137,7 @@ public class ListQuakesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case REFRESH_MENU:
-			sendBroadcast(new Intent("refresh", null, this, QuakeReceiver.class));
+			sendBroadcast(new Intent("refresh", null, this, QuakeRefreshReceiver.class));
 			return true;
 		case PREFS_MENU:
 			Intent prefsActivity = new Intent(getBaseContext(),
@@ -136,7 +154,8 @@ public class ListQuakesActivity extends Activity {
 		switch (requestCode) {
 		case PREFS_REQUEST:
 			if (resultCode == PrefsActivity.CHANGED_RESULT) {
-				sendBroadcast(new Intent("refresh", null, this, QuakeReceiver.class));
+				sendBroadcast(new Intent("receiverRefresh", null, this,
+						QuakeRefreshReceiver.class));
 			}
 			break;
 		}
@@ -144,6 +163,12 @@ public class ListQuakesActivity extends Activity {
 
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		case REFRESH_DIALOG:
+			mRefreshDialog = new ProgressDialog(this);
+			mRefreshDialog.setMessage("Refreshing, please wait.");
+			mRefreshDialog.setIndeterminate(true);
+			mRefreshDialog.setCancelable(false);
+			return mRefreshDialog;
 		}
 		return null;
 	}
@@ -157,7 +182,7 @@ public class ListQuakesActivity extends Activity {
 			Log.e(getClass().getSimpleName(), "could not get version", e);
 			return;
 		}
-		
+
 		QuakePrefs qp = new QuakePrefs(this);
 		if (!qp.isUpgradedTo(4)) {
 			// upgrade range from km to m
@@ -167,7 +192,7 @@ public class ListQuakesActivity extends Activity {
 			}
 
 		}
-		
-		qp.setUpgradedTo(info.versionCode);		
+
+		qp.setUpgradedTo(info.versionCode);
 	}
 }

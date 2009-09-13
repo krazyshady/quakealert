@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 
 public class QuakeNotifier {
 	private static final int ALERT_ID = 0;
@@ -67,5 +68,6 @@ public class QuakeNotifier {
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
 		nm.notify(ALERT_ID, notification);
+		Log.d(getClass().getSimpleName(), "notification sent, " + size + " new");
 	}
 }
