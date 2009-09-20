@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class QuakePrefs {
 	private Context context = null;
@@ -39,7 +40,7 @@ public class QuakePrefs {
 		return f;
 	}
 
-	private long getLong(String key, long def) {
+	public long getLong(String key, long def) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		long l = Long.parseLong(prefs.getString(key, Long.toString(def)));
@@ -105,12 +106,20 @@ public class QuakePrefs {
 		setBoolean(warnId, warn);
 	}
 
-	public long getInterval() {
-		return getLong("interval", 5 * 60 * 1000);
+
+	public Interval getInterval() {
+		String is = getString("interval", "HOUR");
+		Interval i = Interval.valueOf(is);
+		if (i != null) {
+			return i;
+		} 
+		Log.e(getClass().getSimpleName(), "invalid interval found: " + is);
+		setInterval(Interval.HOUR);
+		return Interval.HOUR;
 	}
 
-	public void setInterval(String is) {
-		setString("interval", is);
+	public void setInterval(Interval i) {
+		setString("interval", i.toString());
 	}
 
 	public int getRange() {

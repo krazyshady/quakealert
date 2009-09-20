@@ -24,6 +24,7 @@ public class QuakeRefreshReceiver extends BroadcastReceiver {
 		
 		if (intent.getAction().equals("refresh")) {
 			context.sendBroadcast(new Intent("acquire", null, context, WakeLockReceiver.class));
+			context.sendBroadcast(new Intent("showRefreshDialog"));
 			context.startService(new Intent("refresh", null, context, QuakeRefreshService.class));
 		} else if (intent.getAction().equals("schedule")) {
 			schedule(context);
@@ -39,8 +40,8 @@ public class QuakeRefreshReceiver extends BroadcastReceiver {
 		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
 		mgr.cancel(pi);
 		QuakePrefs prefs = new QuakePrefs(context);
-		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime(), prefs.getInterval(), pi);
+		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				SystemClock.elapsedRealtime()+ prefs.getInterval().getValue(), prefs.getInterval().getValue(), pi);
 	}
 
 	private void cancel(Context context) {

@@ -10,4 +10,5 @@
 <string name="service_warn">By default, Quake Alert! runs periodically to discover quake events and send notifications. You can disable notifications in Menu &gt; Preferences. When notifications are disabled, you will no longer receive quake notifications, and you must manually refresh to discover new quakes via Menu &gt; Refresh.</string>
 <string name="no_quakes_summary">No quakes.</string>
 <string name="no_quakes_good">This is a good thing.</string>
+<string name="interval_warn">Quake Alert! uses &quot;inexact&quot; intervals to conserve battery life. This means that refreshes may not occur exactly when you expect.</string>
 </resources>

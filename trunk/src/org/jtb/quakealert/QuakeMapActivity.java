@@ -47,7 +47,21 @@ public class QuakeMapActivity extends MapActivity {
 			mapOverlays.add(itemizedOverlay);
 		}
 
-		mapView.getController().setZoom(10);
+		int zoom;
+		if (quake.getMagnitude() < 2) {
+			zoom = 11;
+		} else if (quake.getMagnitude() < 3) {
+			zoom = 10;
+		} else if (quake.getMagnitude() < 4) {
+			zoom = 9;
+		} else if (quake.getMagnitude() < 5) {
+			zoom = 8;
+		} else if (quake.getMagnitude() < 6) {
+			zoom = 7;
+		} else {
+			zoom = 6;
+		}
+		mapView.getController().setZoom(zoom);
 		mapView.getController().animateTo(quake.getGeoPoint());
 	}
 
