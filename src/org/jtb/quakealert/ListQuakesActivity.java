@@ -67,6 +67,8 @@ public class ListQuakesActivity extends Activity {
 			sendBroadcast(new Intent("schedule", null, this,
 					QuakeRefreshReceiver.class));
 		}
+		sendBroadcast(new Intent("refresh", null, this,
+				QuakeRefreshReceiver.class));
 
 		WarnDialog.Builder builder = new WarnDialog.Builder(this,
 				"serviceWarn", R.string.service_warn);
@@ -168,7 +170,7 @@ public class ListQuakesActivity extends Activity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Unknown Location");
 			builder
-					.setMessage("Ensure that you have at least on location source enabled in Settings > Security & location.");
+					.setMessage("Ensure that you have at least one location source enabled in Settings > Security & location.");
 			builder.setNeutralButton(R.string.ok,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
@@ -211,7 +213,19 @@ public class ListQuakesActivity extends Activity {
 			if (km > 0) {
 				qp.setRange(km * 1000);
 			}
-
+		}
+		if (!qp.isUpgradedTo(16)) {
+			// upgrade interval
+			Interval i = null;
+			long interval = qp.getLong("interval", 0);
+			if (interval < 60 * 60 * 1000) {
+				// was set to 5 or 10 mins
+				i = Interval.FIFTEEN_MINUTES;
+			} else {
+				// was set to 1 or 3 hours
+				i = Interval.HOUR;
+			}
+			qp.setInterval(i);
 		}
 
 		qp.setUpgradedTo(info.versionCode);

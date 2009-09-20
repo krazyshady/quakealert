@@ -18,6 +18,7 @@ public class QuakeAdapter extends ArrayAdapter {
 	private Location location;
 	private QuakePrefs quakePrefs;
 	private HashSet<String> newIds;
+	private LayoutInflater inflater;
 	
 	QuakeAdapter(Activity context, List<Quake> quakes, Location location) {
 		super(context, R.layout.quake, quakes);
@@ -28,10 +29,10 @@ public class QuakeAdapter extends ArrayAdapter {
 		
 		quakePrefs = new QuakePrefs(context);
 		newIds = quakePrefs.getNewIds();
+		this.inflater = context.getLayoutInflater();
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = context.getLayoutInflater();
 		View view = inflater.inflate(R.layout.quake, null);
 		Quake q = quakes.get(position);
 	

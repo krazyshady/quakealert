@@ -221,4 +221,8 @@ public class Quake {
 	public GeoPoint getGeoPoint() {
 		return geoPoint;
 	}
+	
+	public float getDepth() {
+		return depth;
+	}
 }

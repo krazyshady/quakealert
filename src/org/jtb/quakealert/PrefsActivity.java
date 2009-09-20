@@ -1,5 +1,6 @@
 package org.jtb.quakealert;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -19,6 +20,8 @@ public class PrefsActivity extends PreferenceActivity {
 	private CheckBoxPreference mAlertPreference;
 	private CheckBoxPreference mVibratePreference;
 	private CheckBoxPreference mFlashPreference;
+
+	private AlertDialog mIntervalWarnDialog;
 	
 	private void setRangeEntries(QuakePrefs qp) {
 		if (qp.getUnits().equals("metric")) {
@@ -68,7 +71,7 @@ public class PrefsActivity extends PreferenceActivity {
 				setRangeEntries(qp);
 				
 				sendBroadcast(new Intent("updateList"));				
-				return false;
+				return true;
 			}
 		};
 		
@@ -99,17 +102,31 @@ public class PrefsActivity extends PreferenceActivity {
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
 				String is = (String) newValue;
+				Interval i = Interval.valueOf(is);
 				QuakePrefs qp = new QuakePrefs(mThis);
-				qp.setInterval(is);
+				qp.setInterval(i);
 				sendBroadcast(new Intent("schedule", null, mThis, QuakeRefreshReceiver.class));
 
-				return false;
+				return true;
+			}
+		};
+		Preference.OnPreferenceClickListener intervalWarnListener = new Preference.OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				WarnDialog.Builder builder = new WarnDialog.Builder(preference.getContext(),
+						"intervalWarn", R.string.interval_warn);
+				if (builder.isWarn()) {
+					mIntervalWarnDialog = builder.create();
+					mIntervalWarnDialog.show();
+				}
+				
+				return true;
 			}
 		};
 
 		ListPreference ip = (ListPreference) findPreference("interval");
 		ip.setEnabled(qp.isNotificationsEnabled());
 		ip.setOnPreferenceChangeListener(intervalListener);
+		ip.setOnPreferenceClickListener(intervalWarnListener);
 
 		CheckBoxPreference cbp = (CheckBoxPreference) findPreference("notificationsEnabled");
 		cbp.setOnPreferenceChangeListener(notificationsListener);

@@ -19,71 +19,62 @@ public class QuakeRefreshService extends IntentService {
 	static Location location = null;
 	static ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
 
-	class RefreshRunner implements Runnable {
-		private Context context;
-
-		public RefreshRunner(Context context) {
-			this.context = context;
-		}
-
-		public void run() {
-			Log.d(getClass().getSimpleName(), "refreshing");
-			try {
-				context.sendBroadcast(new Intent("showRefreshDialog"));
-				setLocation(context);
-				if (location == null) {
-					context.sendBroadcast(new Intent("showLocationErrorDialog"));
-					return;
-				}
-				
-				quakes.update();
-				ArrayList<Quake> quakeList = quakes.get();
-				if (quakeList == null) {
-					context.sendBroadcast(new Intent("showNetworkErrorDialog"));
-					return;
-				}
-
-				QuakePrefs quakePrefs = new QuakePrefs(context);
-				HashSet<String> newIds = quakePrefs.getNewIds();
-				HashSet<String> matchIds = quakePrefs.getMatchIds();
-
-				matchQuakes = getQuakeMatches(context, quakeList);
-				if (matchQuakes == null) {
-					return;
-				}
-				
-				int mqsSize = matchQuakes.size();
-				Log.d(getClass().getSimpleName(), "found " + mqsSize
-						+ " matches");
-
-				for (int i = 0; i < mqsSize; i++) {
-					Quake q = matchQuakes.get(i);
-					if (!matchIds.contains(q.getId())) {
-						newIds.add(q.getId());
-					}
-				}
-				Collections.sort(matchQuakes, new Quake.ListComparator(newIds));
-				if (mqsSize > MAX_QUAKES) {
-					matchQuakes = new ArrayList<Quake>(matchQuakes.subList(0,
-							MAX_QUAKES));
-				}
-
-				quakePrefs.setMatchIds(matchQuakes);
-				newIds.retainAll(quakePrefs.getMatchIds());
-				Log.d(getClass().getSimpleName(), newIds.size() + " new");
-				quakePrefs.setNewIds(newIds);
-
-				context.sendBroadcast(new Intent("updateList"));
-				
-				if (quakePrefs.isNotificationsEnabled()) {
-					QuakeNotifier quakeNotifier = new QuakeNotifier(context);
-					quakeNotifier.alert();
-				}
-			} finally {
-				context.sendBroadcast(new Intent("dismissRefreshDialog"));
-				context.sendBroadcast(new Intent("release", null, context,
-						WakeLockReceiver.class));
+	private void refresh() {
+		Log.d(getClass().getSimpleName(), "refreshing");
+		try {
+			sendBroadcast(new Intent("showRefreshDialog"));
+			setLocation(this);
+			if (location == null) {
+				sendBroadcast(new Intent("showLocationErrorDialog"));
+				return;
 			}
+
+			quakes.update();
+			ArrayList<Quake> quakeList = quakes.get();
+			if (quakeList == null) {
+				sendBroadcast(new Intent("showNetworkErrorDialog"));
+				return;
+			}
+
+			QuakePrefs quakePrefs = new QuakePrefs(this);
+			HashSet<String> newIds = quakePrefs.getNewIds();
+			HashSet<String> matchIds = quakePrefs.getMatchIds();
+
+			matchQuakes = getQuakeMatches(this, quakeList);
+			if (matchQuakes == null) {
+				return;
+			}
+
+			int mqsSize = matchQuakes.size();
+			Log.d(getClass().getSimpleName(), "found " + mqsSize + " matches");
+
+			for (int i = 0; i < mqsSize; i++) {
+				Quake q = matchQuakes.get(i);
+				if (!matchIds.contains(q.getId())) {
+					newIds.add(q.getId());
+				}
+			}
+			Collections.sort(matchQuakes, new Quake.ListComparator(newIds));
+			if (mqsSize > MAX_QUAKES) {
+				matchQuakes = new ArrayList<Quake>(matchQuakes.subList(0,
+						MAX_QUAKES));
+			}
+
+			quakePrefs.setMatchIds(matchQuakes);
+			newIds.retainAll(quakePrefs.getMatchIds());
+			Log.d(getClass().getSimpleName(), newIds.size() + " new");
+			quakePrefs.setNewIds(newIds);
+
+			sendBroadcast(new Intent("updateList"));
+
+			if (quakePrefs.isNotificationsEnabled()) {
+				QuakeNotifier quakeNotifier = new QuakeNotifier(this);
+				quakeNotifier.alert();
+			}
+		} finally {
+			sendBroadcast(new Intent("dismissRefreshDialog"));
+			sendBroadcast(new Intent("release", null, this,
+					WakeLockReceiver.class));
 		}
 	}
 
@@ -97,7 +88,8 @@ public class QuakeRefreshService extends IntentService {
 				+ intent.getAction());
 
 		if (intent.getAction().equals("refresh")) {
-			new Thread(new RefreshRunner(this)).start();
+			//new Thread(new RefreshRunner(this)).start();
+			refresh();
 		}
 	}
 
@@ -129,7 +121,7 @@ public class QuakeRefreshService extends IntentService {
 		if (location == null) {
 			return null;
 		}
-		
+
 		ArrayList<Quake> matchQuakes = new ArrayList<Quake>();
 		int quakeListSize = quakeList.size();
 		for (int i = 0; i < quakeListSize; i++) {

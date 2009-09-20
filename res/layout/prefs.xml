@@ -15,9 +15,9 @@
 		android:summary="Send notifications when quakes occur that match your criteria."
 		android:key="notificationsEnabled" android:defaultValue="true" />
 	<PreferenceCategory android:title="Notification Details">
-		<ListPreference android:title="Monitoring Interval"
+		<ListPreference android:title="Interval"
 			android:summary="Check for new quakes this often." android:key="interval"
-			android:defaultValue="300000" android:entries="@array/interval_entries"
+			android:defaultValue="HOUR" android:entries="@array/interval_entries"
 			android:entryValues="@array/interval_values" />
 		<CheckBoxPreference android:title="Flash?"
 			android:summary="Notifications flash the message indiator?"
