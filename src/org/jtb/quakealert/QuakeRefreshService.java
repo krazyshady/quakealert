@@ -98,7 +98,6 @@ public class QuakeRefreshService extends IntentService {
 				.getSystemService(Context.LOCATION_SERVICE);
 		String name = lm.getBestProvider(new Criteria(), true);
 		if (name == null) {
-			// TODO: error dialog an exit (this.finish())?
 			Log.e(QuakeRefreshService.class.getSimpleName(),
 					"no best location provider returned");
 			location = null;

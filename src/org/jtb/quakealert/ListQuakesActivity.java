@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -76,12 +78,21 @@ public class ListQuakesActivity extends Activity {
 			mServiceWarnDialog = builder.create();
 			mServiceWarnDialog.show();
 		}
+		
+		Uri alertSoundUri = qp.getNotificationAlertSound();
+		if (alertSoundUri == null) {
+			Uri defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+			qp.setNotificationAlertSound(defaultUri);
+		}
+		
+		Log.d(getClass().getSimpleName(), "created");
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		unregisterReceiver(listUpdateReceiver);
+		Log.d(getClass().getSimpleName(), "paused");
 	}
 
 	@Override
@@ -99,11 +110,11 @@ public class ListQuakesActivity extends Activity {
 				"showLocationErrorDialog"));
 		registerReceiver(listUpdateReceiver, new IntentFilter(
 				"showNetworkErrorDialog"));
+		
+		Log.d(getClass().getSimpleName(), "resumed");
 	}
 
 	public void updateList() {
-		Log.d(getClass().getSimpleName(), "updating list");
-
 		if (QuakeRefreshService.matchQuakes != null
 				&& QuakeRefreshService.matchQuakes.size() > 0) {
 			QuakeAdapter qa = new QuakeAdapter(this,
@@ -112,9 +123,13 @@ public class ListQuakesActivity extends Activity {
 			mNoQuakesLayout.setVisibility(View.GONE);
 			mList.setVisibility(View.VISIBLE);
 			mList.setAdapter(qa);
+			
+			new QuakePrefs(this).clearNewIds();
+			Log.d(getClass().getSimpleName(), "updated list (visible)");
 		} else {
 			mNoQuakesLayout.setVisibility(View.VISIBLE);
 			mList.setVisibility(View.GONE);
+			Log.d(getClass().getSimpleName(), "updated list (gone)");
 		}
 	}
 

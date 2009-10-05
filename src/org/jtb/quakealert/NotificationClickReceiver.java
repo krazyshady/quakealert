@@ -10,7 +10,6 @@ public class NotificationClickReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		QuakePrefs qp = new QuakePrefs(context);
-		qp.clearNewIds();		
 		Collections.sort(QuakeRefreshService.matchQuakes, new Quake.ListComparator(null));
 	
 		Intent listIntent = new Intent(context, ListQuakesActivity.class);
