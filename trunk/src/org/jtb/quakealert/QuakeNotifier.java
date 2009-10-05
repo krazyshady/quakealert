@@ -38,7 +38,7 @@ public class QuakeNotifier {
 
 		Notification notification = new Notification(icon, tickerText, when);
 		if (quakePrefs.isNotificationAlert()) {
-			notification.defaults |= Notification.DEFAULT_SOUND;
+			notification.sound = quakePrefs.getNotificationAlertSound();
 		}
 		if (quakePrefs.isNotificationFlash()) {
 			notification.flags |= Notification.FLAG_SHOW_LIGHTS;

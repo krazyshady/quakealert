@@ -157,12 +157,20 @@ public class QuakeOverlay extends ItemizedOverlay {
 		}
 
 		DrawValues dvs = getDrawValues(quake);
+		int zoom = mapView.getZoomLevel();
 
-		canvas.drawCircle(point.x, point.y, dvs.markRadius + 2,
+		int radius;
+		if (zoom >= 6) {
+			radius = 4;
+		} else {
+			radius = dvs.markRadius;
+		}
+		
+		canvas.drawCircle(point.x, point.y, radius + 2,
 				dvs.markGlowPaint);
-		canvas.drawCircle(point.x, point.y, dvs.markRadius + 1,
+		canvas.drawCircle(point.x, point.y, radius + 1,
 				dvs.markOutlinePaint);
-		canvas.drawCircle(point.x, point.y, dvs.markRadius, dvs.markPaint);
+		canvas.drawCircle(point.x, point.y, radius, dvs.markPaint);
 
 		int dmgRadius = (int) projection.metersToEquatorPixels(dvs.dmgMeters);
 		if (dmgRadius > 3 * dvs.markRadius) {
@@ -171,7 +179,6 @@ public class QuakeOverlay extends ItemizedOverlay {
 			canvas.drawCircle(point.x, point.y, dmgRadius, dvs.feelPaint);
 		}
 
-		int zoom = mapView.getZoomLevel();
 		// Log.d(getClass().getSimpleName(), "zoom: " + zoom);
 		if (zoom >= 6) {
 			RectF rect = new RectF();

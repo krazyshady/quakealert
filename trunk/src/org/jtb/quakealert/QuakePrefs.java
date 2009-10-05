@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -224,5 +225,19 @@ public class QuakePrefs {
 		}
 
 		return tokens;
+	}
+	
+	public Uri getNotificationAlertSound() {
+		String s = getString("notificationAlertSound", "");
+		if (s == null || s.length() == 0) {
+			return null;
+		}
+		Uri sound = Uri.parse(s);
+		
+		return sound;
+	}	
+	
+	public void setNotificationAlertSound(Uri soundUri) {
+		setString("notificationAlertSound", soundUri.toString());
 	}
 }
