@@ -140,6 +140,10 @@ public class QuakeOverlay extends ItemizedOverlay {
 
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+		if (shadow) {
+			return;
+		}
+		
 		Projection projection = mapView.getProjection();
 		Point point = new Point();
 		projection.toPixels(quake.getGeoPoint(), point);
@@ -182,7 +186,7 @@ public class QuakeOverlay extends ItemizedOverlay {
 		// Log.d(getClass().getSimpleName(), "zoom: " + zoom);
 		if (zoom >= 6) {
 			RectF rect = new RectF();
-			int rx1 = point.x + dvs.markRadius + PADDING * 2;
+			int rx1 = point.x + radius + PADDING * 2;
 			int ry1 = point.y - (TEXTSIZE * TEXTLINES) / 2 - PADDING;
 			int rx2 = rx1 + dvs.labelWidth + PADDING * 2;
 			int ry2 = ry1 + TEXTSIZE * TEXTLINES + PADDING * 2;
