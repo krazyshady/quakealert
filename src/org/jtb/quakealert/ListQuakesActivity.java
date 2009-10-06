@@ -242,7 +242,15 @@ public class ListQuakesActivity extends Activity {
 			}
 			qp.setInterval(i);
 		}
-
+		if (!qp.isUpgradedTo(20)) {
+			// if using 100km range, set to 250km
+			// 100km is removed
+			int km = qp.getRange();
+			if (km == 100) {
+				qp.setRange(250);
+			}
+		}
+		
 		qp.setUpgradedTo(info.versionCode);
 	}
 }
