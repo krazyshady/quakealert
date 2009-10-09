@@ -240,4 +240,8 @@ public class QuakePrefs {
 	public void setNotificationAlertSound(Uri soundUri) {
 		setString("notificationAlertSound", soundUri.toString());
 	}
+	
+	public boolean isZoomToFit() {
+		return getBoolean("zoomToFit", false);
+	}
 }

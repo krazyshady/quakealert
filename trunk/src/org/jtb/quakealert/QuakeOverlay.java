@@ -85,7 +85,8 @@ public class QuakeOverlay extends ItemizedOverlay {
 			// the circle to mark the spot
 			markPaint.setColor(quake.getColor());
 			markPaint.setAntiAlias(true);
-
+			markPaint.setAlpha(150);
+			
 			// "feel" circle
 			feelPaint.setColor(quake.getColor());
 			feelPaint.setAntiAlias(true);

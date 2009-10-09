@@ -15,15 +15,15 @@ public class QuakeMapActivity extends MapActivity {
 	static QuakeMapActivity mThis;
 
 	private MapView mMapView;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map);
 
 		mThis = this;
-		mMapView = (MapView)findViewById(R.id.mapview);
-		
+		mMapView = (MapView) findViewById(R.id.map_view);
+
 		Integer p = savedInstanceState != null ? (Integer) savedInstanceState
 				.get("org.jtb.quakealert.quake.position") : null;
 		if (p == null) {
@@ -49,20 +49,42 @@ public class QuakeMapActivity extends MapActivity {
 			mapOverlays.add(itemizedOverlay);
 		}
 
-		int zoom = getZoom(QuakeRefreshService.matchQuakes, quake);
+		QuakePrefs qp = new QuakePrefs(this);
+		if (qp.isZoomToFit()) {
+			zoomToSpan(QuakeRefreshService.matchQuakes, quake);
+		} else {
+			zoomToMagnitude(quake);
+		}
 		mMapView.getController().animateTo(quake.getGeoPoint());
+	}
+
+	private void zoomToMagnitude(Quake quake) {
+		int zoom;
+		if (quake.getMagnitude() < 2) {
+			zoom = 11;
+		} else if (quake.getMagnitude() < 3) {
+			zoom = 10;
+		} else if (quake.getMagnitude() < 4) {
+			zoom = 9;
+		} else if (quake.getMagnitude() < 5) {
+			zoom = 8;
+		} else if (quake.getMagnitude() < 6) {
+			zoom = 7;
+		} else {
+			zoom = 6;
+		}
 		mMapView.getController().setZoom(zoom);
 	}
 
-	private int getZoom(List<Quake> quakeList, Quake center) {
+	private void zoomToSpan(List<Quake> quakeList, Quake center) {
 		int latMax = quakeList.get(0).getLatitudeE6();
 		int latMin = quakeList.get(0).getLatitudeE6();
 		int lonMax = quakeList.get(0).getLongitudeE6();
 		int lonMin = quakeList.get(0).getLongitudeE6();
 		int latC = center.getLatitudeE6();
 		int lonC = center.getLongitudeE6();
-		
-		for (Quake q: quakeList) {
+
+		for (Quake q : quakeList) {
 			if (q.getLatitudeE6() > latMax) {
 				latMax = q.getLatitudeE6();
 			}
@@ -76,30 +98,22 @@ public class QuakeMapActivity extends MapActivity {
 				lonMin = q.getLongitudeE6();
 			}
 		}
-		
-		int latM = (latMax+latMin) / 2;
-		int lonM = (lonMax+lonMin) / 2;
 
-		if (latC-latM > 0) {
-			latMax += latC-latM;
+		int latM = (latMax + latMin) / 2;
+		int lonM = (lonMax + lonMin) / 2;
+
+		if (latC - latM > 0) {
+			latMax += latC - latM;
 		} else {
-			latMin += latC-latM;
+			latMin += latC - latM;
 		}
-		if (lonC-lonM > 0) {
-			lonMax += lonC-lonM;
+		if (lonC - lonM > 0) {
+			lonMax += lonC - lonM;
 		} else {
-			lonMin += latC-latM;
+			lonMin += latC - latM;
 		}
-		
-		mMapView.getController().zoomToSpan(latMax-latMin, lonMax - lonMin);	
-		int zoom = mMapView.getZoomLevel();
-		Log.d(getClass().getSimpleName(), "zoom=" + zoom);
-		if (zoom < 16) {
-			//mMapView.getController().setZoom(12);
-			zoom = 16;
-		}
-		
-		return zoom;
+
+		mMapView.getController().zoomToSpan(latMax - latMin, lonMax - lonMin);
 	}
 
 	@Override

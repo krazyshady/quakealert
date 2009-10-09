@@ -8,9 +8,12 @@
 		android:key="magnitude" android:defaultValue="2.5"
 		android:entries="@array/magnitude_entries" android:entryValues="@array/magnitude_values" />
 	<ListPreference android:title="Units"
-		android:summary="Set units to use when displaying distances (US or metric)." android:key="units"
-		android:defaultValue="metric" android:entries="@array/units_entries"
+		android:summary="Set units to use when displaying distances (US or metric)."
+		android:key="units" android:defaultValue="metric" android:entries="@array/units_entries"
 		android:entryValues="@array/units_values" />
+	<CheckBoxPreference android:title="Zoom to fit?"
+		android:summary="Zoom map to fit all listed quakes?" android:key="zoomToFit"
+		android:defaultValue="false" />
 	<CheckBoxPreference android:title="Send Notifications?"
 		android:summary="Send notifications when quakes occur that match your criteria."
 		android:key="notificationsEnabled" android:defaultValue="true" />
@@ -20,14 +23,14 @@
 			android:defaultValue="HOUR" android:entries="@array/interval_entries"
 			android:entryValues="@array/interval_values" />
 		<CheckBoxPreference android:title="Flash?"
-			android:summary="Flash LED on notification?"
-			android:key="notificationFlash" android:defaultValue="true" />
+			android:summary="Flash LED on notification?" android:key="notificationFlash"
+			android:defaultValue="true" />
 		<CheckBoxPreference android:title="Alert?"
 			android:summary="Sound an alert on notifications?" android:key="notificationAlert"
 			android:defaultValue="false" />
 		<RingtonePreference android:title="Alert Sound"
 			android:summary="Set alert sound." android:key="notificationAlertSound"
-			android:defaultValue="" android:ringtoneType="notification"/>
+			android:defaultValue="" android:ringtoneType="notification" />
 		<CheckBoxPreference android:title="Vibrate?"
 			android:summary="Notifications vibrate?" android:key="notificationVibrate"
 			android:defaultValue="false" />
