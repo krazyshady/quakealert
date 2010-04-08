@@ -2,15 +2,23 @@
 <resources>
 	<string-array name="magnitude_values">
 		<item>1</item>
-		<item>2.5</item>
+		<item>3</item>
+		<item>4</item>
 		<item>5</item>
+		<item>6</item>
 		<item>7</item>
+		<item>8</item>
+		<item>9</item>
 	</string-array>
 	<string-array name="magnitude_entries">
-		<item>M1.0+</item>
-		<item>M2.5+</item>
-		<item>M5.0+</item>
-		<item>M7.0+</item>
+		<item>M1.0+ (micro)</item>
+		<item>M3.0+ (minor)</item>
+		<item>M4.0+ (light)</item>
+		<item>M5.0+ (moderate)</item>
+		<item>M6.0+ (strong)</item>
+		<item>M7.0+ (major)</item>
+		<item>M8.0+ (great)</item>
+		<item>M9.0+ (epic)</item>
 	</string-array>
 	<string-array name="range_values">
 		<item>100000</item>
