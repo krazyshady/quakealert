@@ -1,5 +1,5 @@
 #summary Help page for QuakeAlert!
 
-= Introduction =
+QuakeAlert! is a simple Android application for tracking and monitoring earth quake activity. Taking is taken from the [http://www.usgs.gov/ USGS].
 
-TODO.
+If you have issues / problems with QuakeAlert!, you can submit a new issue here or contact me, the developer, directly.
