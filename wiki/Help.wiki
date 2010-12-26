@@ -16,4 +16,8 @@ QuakeAlert! requires permission to obtain your coarse location. Coarse location 
 
 If you wish to validate that QuakeAlert! is not using your location when Use Location? is not checked, or wish to ensure that it is not using it for insidious purpose, you may inspect the [http://code.google.com/p/quakealert/source/checkout source code].
 
+= Thanks! =
+
+QuakeAlert! is always free of charge and is developed in my spare time. It helps tremendously if you are able to interact with my to help diagnose problems. I am one person with one type of device, so my ability to perform robust testing is quite limited.
+
 If you have issues / problems with QuakeAlert!, you can [http://code.google.com/p/quakealert/issues/entry submit a new issue here], [http://code.google.com/p/quakealert/issues/list view existing issues], or [mailto:jeffrey.blattman@gmail.com contact me], the developer, directly.
