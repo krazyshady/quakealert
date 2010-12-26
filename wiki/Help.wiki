@@ -2,4 +2,18 @@
 
 QuakeAlert! is a simple Android application for tracking and monitoring earth quake activity. Taking is taken from the [http://www.usgs.gov/ USGS].
 
+= Notifications =
+
+By default, QuakeAlert! periodically runs a background process that checks for new earth quakes that match the criteria specified in its preferences. If found, you are alerted via a status bar notification. You can set the specifics of the notification (sound, flashing, vibrate, etc) in preferences.
+
+Running the check for new earth quakes in the background is done in the most battery- and memory- efficient manner possible. You can adjust the check period in preferences. 
+
+If you do not wish to receive notifications, disabled the _Menu > Preferences > Send Notifications?_ check box. No background process will be run. 
+
+= Location =
+
+QuakeAlert! requires permission to obtain your coarse location. Coarse location is less exact, and less battery draining than GPS location. If you do not want QuakeAlert! to use your location, disable the _Menu > Preferences > Use Location?_ check box. 
+
+If you wish to validate that QuakeAlert! is not using your location when Use Location? is not checked, or wish to ensure that it is not using it for insidious purpose, you may inspect the [http://code.google.com/p/quakealert/source/checkout source code].
+
 If you have issues / problems with QuakeAlert!, you can [http://code.google.com/p/quakealert/issues/entry submit a new issue here], [http://code.google.com/p/quakealert/issues/list view existing issues], or [mailto:jeffrey.blattman@gmail.com contact me], the developer, directly.
