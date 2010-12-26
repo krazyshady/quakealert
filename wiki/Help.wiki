@@ -1,6 +1,10 @@
 #summary Help page for QuakeAlert!
 
+= Overview = 
+
 QuakeAlert! is a simple Android application for tracking and monitoring earth quake activity. Taking is taken from the [http://www.usgs.gov/ USGS].
+
+QuakeAlert! displays a list of earthquakes with their date and distance from you (if _Use Location_ is enabled, see below). You may click a quake listing to either view the earthquake on a map or visit the USGS web page for that earthquake to get more details.
 
 = Notifications =
 
@@ -14,7 +18,7 @@ By default, you must start QuakeAlert! once after a boot to schedule notificatio
 
 = Location =
 
-QuakeAlert! requires permission to obtain your coarse location. Coarse location is less exact, and less battery draining than GPS location. If you do not want QuakeAlert! to use your location, disable the _Menu > Preferences > Use Location?_ check box. 
+QuakeAlert! requires permission to obtain your coarse location. Coarse location is less exact, and less battery draining than GPS location. If you do not want QuakeAlert! to use your location, disable the _Menu > Preferences > Use Location?_ check box. If you disable _Use Location?_, distances from earthquake epicenters will not be displayed.
 
 If you wish to validate that QuakeAlert! is not using your location when Use Location? is not checked, or wish to ensure that it is not using it for insidious purpose, you may inspect the [http://code.google.com/p/quakealert/source/checkout source code].
 
