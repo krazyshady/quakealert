@@ -10,6 +10,8 @@ Running the check for new earth quakes in the background is done in the most bat
 
 If you do not wish to receive notifications, disabled the _Menu > Preferences > Send Notifications?_ check box. No background process will be run. 
 
+By default, you must start QuakeAlert! once after a boot to schedule notifications. You can also enable the _Menu > Preferences > Notifications > Start at Boot?_ check box to automatically schedule to receive notifications when your phone is rebooted.
+
 = Location =
 
 QuakeAlert! requires permission to obtain your coarse location. Coarse location is less exact, and less battery draining than GPS location. If you do not want QuakeAlert! to use your location, disable the _Menu > Preferences > Use Location?_ check box. 
